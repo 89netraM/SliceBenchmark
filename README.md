@@ -6,7 +6,17 @@ the new length), or slicing of the first element with a range (`1..`).
 
 [SharpLab shows](https://sharplab.io/#v2:D4AQTAjAsAULIGYAE4kGUA2BLAxgUwCE8A7HACwFsBDAJwGtYBvWJVpABxqwDcqAXPEgCyeCgHsaATwA8AI0kCAfEgAm/KgG5YLNoiRZifJAEliKvAA8AFAEodrZjDbOkvGkgDO7KsSQBeVXUAOjRvYi0nF1Y3TwBXCn8kAAYIqNYAMwkkKwMjLESU/SRpTzCggBkSAHM+Mg19AGoGu0ioxzSXD3ikBoCvHwBtLABdVLSAX3sXEAB2OIox1km4VpRkXPRsfAhbKfa0mK6EgJSp50z3K0OwxLU+KhCw+v7iCurapGVCl8SXkK28FYIDYWh19h1WEcen0wgMkqMzmxlh1ZvNFkhllM9BtMLg8BBKsQamRdqtwS5Dt0TujzlkrrRSj5bsFQj5nmVCcTPsl2UyYT5/nigQAaRmvTkfAC0SGBoLS5I6UN6YrhCNWzmRaVRR3RmNW2MMSAASj4qvjSc4FWxKcceYiMnTrnzAvdHmyxW8iR8vrzfPziAMIEEgsM5W17Z1usqXqqaUiI9r4rrYMsgA==)
 the range version will be lowered to using the `Slice` method with explicit new
-length, but the benchmark shows something else is happening.
+length.
+
+```csharp
+span = span[1..];
+```
+is lowered to
+```csharp
+span = span.Slice(1, span.Length - 1);
+```
+
+But judging by the benchmarks that doesn't seem to reflect reality.
 
 | Method       | N       | Mean             | Error          | StdDev         | Ratio | RatioSD | Code Size | Allocated | Alloc Ratio |
 |------------- |--------:|-----------------:|---------------:|---------------:|------:|--------:|----------:|----------:|------------:|
@@ -25,5 +35,5 @@ length, but the benchmark shows something else is happening.
 | Slice1Length | 1048576 |   575,577.536 ns | 11,057.9516 ns | 10,343.6148 ns |  1.73 |    0.04 |     176 B |         - |          NA |
 | Range1       | 1048576 | 1,033,553.138 ns | 19,597.4235 ns | 18,331.4421 ns |  3.09 |    0.05 |     232 B |       1 B |          NA |
 
-The assembly produced as shown by BenchmarkDotNet (and SharpLab) is different
-between the `Slice1Length` and `Range1` methods.
+Also, the assembly produced as shown by BenchmarkDotNet (and SharpLab) is
+different between the `Slice1Length` and `Range1` methods.
