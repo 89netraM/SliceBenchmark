@@ -1,9 +1,10 @@
 using System;
-
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 
 [ReturnValueValidator]
 [MemoryDiagnoser, DisassemblyDiagnoser]
+[SimpleJob(RuntimeMoniker.Net70), SimpleJob(RuntimeMoniker.Net80), SimpleJob(RuntimeMoniker.Net90)]
 public class SliceBenchmark
 {
     [Params(8, 1024, 1024 * 1024)]
